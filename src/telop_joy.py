@@ -30,7 +30,7 @@ class CarTelop:
         self.pub_steer.publish(steering_angle)
 
         # setting up the recording for the rosbag
-        self.command = "rosbag record /rgb/image_raw_color"
+        self.command = "rosbag record /rgb/image_raw_color /commands/motor/duty_cycle /commands/servo/position /commands/motor/duty_cycle"
         self.rosbag_rec = False
 
         rospy.loginfo("intializing")
@@ -59,7 +59,7 @@ class CarTelop:
 
         if data.buttons[6] == 1:
             # acceleration  multiplier
-            acc_multiplier_1 = 2
+            acc_multiplier_1 = 5
         if data.buttons[4] == 1:
             # acceleration  multiplier
             acc_multiplier_2 = 2
@@ -71,13 +71,13 @@ class CarTelop:
         if data.buttons[3] == 1 and self.rosbag_rec == True:
             # reset car and stop recording
             # intialze steering value
-            steering_angle = 0.5
-            rospy.loginfo("steering_angle = 0")
-            self.pub_steer.publish(steering_angle)
-            # stoping the car
-            rospy.loginfo("speed = 0")
-            self.pub_speed.publish(0)
-            # terminate the rosbag collection
+            # steering_angle = 0.5
+            # #rospy.loginfo("steering_angle = 0")
+            # self.pub_steer.publish(steering_angle)
+            # # stoping the car
+            # #rospy.loginfo("speed = 0")
+            # self.pub_speed.publish(0)
+            # # terminate the rosbag collection
             rospy.loginfo("terminating recording the bag file")
             terminate_process_and_children(self.rosbag_process)
             self.rosbag_rec = False
@@ -85,19 +85,19 @@ class CarTelop:
             # stop and reset car
             # intialze steering value
             steering_angle = 0.5
-            rospy.loginfo("steering_angle = 0")
+            # rospy.loginfo("steering_angle = 0")
             self.pub_steer.publish(steering_angle)
             # stoping the car
-            rospy.loginfo("speed = 0")
+            # rospy.loginfo("speed = 0")
             self.pub_speed.publish(0)
 
-        duty_cycle_value = 0.25 * data.axes[1] * acc_multiplier_1 * acc_multiplier_2
+        duty_cycle_value = 0.1 * data.axes[1] * acc_multiplier_1 * acc_multiplier_2
         steering_value   = 0.5 - 0.4 * data.axes[2]
 
         log_text = "steering_angle = " + str(steering_value) + " throttle_value = " + \
                     str(duty_cycle_value)
 
-        rospy.loginfo(log_text)
+        # rospy.loginfo(log_text)
         self.pub_throttle.publish(duty_cycle_value)
         self.pub_steer.publish(steering_value)
 
